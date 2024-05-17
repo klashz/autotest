@@ -1,4 +1,5 @@
 from typing import List, Union
+from collections import Counter
 
 from selenium import webdriver
 from selenium.webdriver.remote.webelement import WebElement
@@ -32,5 +33,15 @@ class PageManager:
         # click!
         button: WebElement = driver.find_element(By.XPATH, "//input[@id='addbutton']")
         button.click()
-        
+
         return True
+
+    def mapper(self, values: List[Union[Config.DONE, Config.UNDONE]]) -> str:
+
+        for i in range(len(values)):
+            values[i] = Config.MAPPED[values[i]]
+
+        results = Counter(values)
+        info = f'Marked: {results.get("Marked", 0)}  Not marked: {results.get("Not marked", 0)}'
+
+        return info
