@@ -12,15 +12,21 @@ class PageManager:
     def __init__(self) -> None:
         pass
 
-    def get_status_tasks(self, driver: webdriver) -> List[WebElement]:
+    def __get_tasks(self, driver):
         task_list = driver.find_element(By.TAG_NAME, "ul")
         status_tasks = task_list.find_elements(By.XPATH, f"//span[@class='{Config.UNDONE}' or @class='{Config.DONE}']")
-        return list(map(lambda x: x.get_attribute("class"), status_tasks))
+        return status_tasks
+
+    def get_status_tasks(self, driver: webdriver) -> List[WebElement]:
+        return list(map(lambda x: x.get_attribute("class"), self.__get_tasks(driver)))
 
     def get_tasks(self, driver: webdriver) -> List[WebElement]:
         task_list = driver.find_element(By.TAG_NAME, "ul")
         tasks = task_list.find_elements(By.XPATH, "//input[@type='checkbox']")
         return tasks
+    
+    def get_text_task(self, driver: webdriver) -> List[WebElement]:
+        return list(map(lambda x: x.text, self.__get_tasks(driver)))
 
     def create_task(self, driver: webdriver, text: str) -> Union[bool, ValueError]:
         if not isinstance(text, str):

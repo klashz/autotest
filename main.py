@@ -3,6 +3,7 @@ from collections import Counter
 
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.by import By
+import unittest
 
 from src import (
     GetSeleniumEdge, 
@@ -11,32 +12,71 @@ from src import (
 )
 
 
-manager = PageManager()
-driver = GetSeleniumEdge()
-driver.get(Config.BASE_URL)
+class TestPage:
+    def __init__(self) -> None:
+        self.manager = PageManager()
+        self.driver = GetSeleniumEdge()
+        self.driver.get(Config.BASE_URL)
+    
+    def checking_start_text(self):
+        text = self.driver.find_element(By.CLASS_NAME, "ng-binding").text
+        return text
+    
+    def status_first_task(self):
+        return self.manager.get_status_tasks(self.driver)[0]
+
+    def click_by_tasks(self):
+        status_tasks = self.manager.get_status_tasks(self.driver)
+        print("Status of task list before click:", self.manager.mapper(status_tasks))
+
+        tasks = self.manager.get_tasks(self.driver)
+        for i in range(len(status_tasks)):
+            tasks[i].click()
+            time.sleep(1)
+
+            temp_status_tasks = self.manager.get_status_tasks(self.driver)
+            print("Status of task list after click:", self.manager.mapper(temp_status_tasks))
+
+        return self.manager.get_text_task(self.driver)[-1]
+
+    def create_new_task(self):
+        self.manager.create_task(self.driver, "Сделать первую лабу")
+        time.sleep(1)
+        tasks = self.manager.get_tasks(self.driver)
+        status_tasks = self.manager.get_status_tasks(self.driver)
+        print("Status of task list with new task before click:", self.manager.mapper(status_tasks))
+        tasks[-1].click()
+        return self.manager.get_text_task(self.driver)[-1]
+    
+    def checking_count(self):
+        return len(self.manager.get_tasks(self.driver))
+    
+
+class TestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.pg = TestPage()
+
+    def test_1(self):
+        result = self.pg.checking_start_text()
+        self.assertEqual(result, "5 of 5 remaining")
+
+    def test_2(self):
+        result = self.pg.status_first_task()
+        self.assertEqual(result, "done-false")
+
+    def test_3(self):
+        result = self.pg.click_by_tasks()
+        self.assertEqual(result, "Fifth Item")
+
+    def test_4(self):
+        result = self.pg.create_new_task()
+        self.assertEqual(result, "Сделать первую лабу")
+
+    def test_5(self):
+        result = self.pg.checking_count()
+        self.assertEqual(result, 6)
 
 
-text = driver.find_element(By.CLASS_NAME, "ng-binding").text
-assert text == "5 of 5 remaining", ValueError("Задачи не совпадают!")
-
-status_tasks = manager.get_status_tasks(driver)
-print("Status of task list before click:", manager.mapper(status_tasks))
-
-for i in range(len(status_tasks)):
-    tasks = manager.get_tasks(driver)
-    tasks[i].click()
-    time.sleep(1)
-
-    temp_status_tasks = manager.get_status_tasks(driver)
-    print("Status of task list after click:", manager.mapper(temp_status_tasks))
-
-print("Add new task...")
-manager.create_task(driver, "Сделать первую лабу")
-time.sleep(1)
-tasks = manager.get_tasks(driver)
-status_tasks = manager.get_status_tasks(driver)
-print("Status of task list with new task before click:", manager.mapper(status_tasks))
-tasks[-1].click()
-status_tasks = manager.get_status_tasks(driver)
-print("Status of task list with new task after click: ", manager.mapper(status_tasks))
-time.sleep(1)
+if __name__ == '__main__':
+    unittest.main(warnings='ignore')
