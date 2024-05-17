@@ -1,9 +1,13 @@
-from typing import List, Union
-from collections import Counter
+import os
+import time
+from datetime import datetime as dt
+from typing import List, Union, Optional
 
 from selenium import webdriver
+from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 
 from .base import Config
 
@@ -12,42 +16,49 @@ class PageManager:
     def __init__(self) -> None:
         pass
 
-    def __get_tasks(self, driver):
-        task_list = driver.find_element(By.TAG_NAME, "ul")
-        status_tasks = task_list.find_elements(By.XPATH, f"//span[@class='{Config.UNDONE}' or @class='{Config.DONE}']")
-        return status_tasks
-
-    def get_status_tasks(self, driver: webdriver) -> List[WebElement]:
-        return list(map(lambda x: x.get_attribute("class"), self.__get_tasks(driver)))
-
-    def get_tasks(self, driver: webdriver) -> List[WebElement]:
-        task_list = driver.find_element(By.TAG_NAME, "ul")
-        tasks = task_list.find_elements(By.XPATH, "//input[@type='checkbox']")
-        return tasks
+    def __open_list(self, driver: webdriver) -> None:
+        button = driver.find_element(By.XPATH, "//button[@class='hamburger']")
+        button.click()
     
-    def get_text_task(self, driver: webdriver) -> List[WebElement]:
-        return list(map(lambda x: x.text, self.__get_tasks(driver)))
-
-    def create_task(self, driver: webdriver, text: str) -> Union[bool, ValueError]:
-        if not isinstance(text, str):
-            raise ValueError("Enter only string type!")
-        
-        # Set text!
-        temp_input = driver.find_element(By.XPATH, "//input[@id='sampletodotext']")
-        temp_input.send_keys(text)
-
-        # click!
-        button: WebElement = driver.find_element(By.XPATH, "//input[@id='addbutton']")
+    def __open_study(self, driver: webdriver) -> None:
+        button = driver.find_element(By.XPATH, "//a[text()='Обучающимся']")
+        wait = WebDriverWait(driver, timeout=10)
+        wait.until(lambda _: button.is_displayed())
+        webdriver.ActionChains(driver).move_to_element(button).perform()
+    
+    def __open_schedule(self, driver: webdriver) -> None:
+        button = driver.find_element(By.XPATH, "//a[text()='Расписания']")
+        wait = WebDriverWait(driver, timeout=10)
+        wait.until(lambda _: button.is_displayed())
         button.click()
 
-        return True
+    def schedule(self, driver: webdriver) -> None:
+        self.__open_list(driver)
+        self.__open_study(driver)
+        self.__open_schedule(driver)
+        return driver.current_url
 
-    def mapper(self, values: List[Union[Config.DONE, Config.UNDONE]]) -> str:
-
-        for i in range(len(values)):
-            values[i] = Config.MAPPED[values[i]]
-
-        results = Counter(values)
-        info = f'Marked: {results.get("Marked", 0)}  Not marked: {results.get("Not marked", 0)}'
-
-        return info
+    def watch_on_site_schedule(self, driver: webdriver) -> str:
+        span = driver.find_element(By.XPATH, "//span[text()='Смотрите на сайте']")
+        webdriver.ActionChains(driver).scroll_to_element(span).perform()
+        button = span.find_element(By.XPATH, "./..")
+        button.click()
+        driver.switch_to.window(driver.window_handles[1])
+        return driver.current_url
+    
+    def set_groups(self, driver: webdriver, groups: str = Config.GROUPS) -> None:
+        entry = driver.find_element(By.XPATH, "//input[@class='groups']")
+        entry.send_keys(groups)
+        return groups
+    
+    def click_to_groups(self, driver: webdriver):
+        wait = WebDriverWait(driver, timeout=10)
+        wait.until(EC.presence_of_element_located((By.XPATH, "//div[text()='221-323']")))
+        group = driver.find_element(By.XPATH, "//div[text()='221-323']")
+        group.click()
+        return group.get_attribute("id")
+    
+    def screenshot(self, driver: webdriver, test_name: str, path: Optional[str] = Config.IMAGE_LOGS) -> None:
+        current_time = dt.now().strftime('%Y_%m_%d_%H_%M_%S')
+        filename = f"num_test_{test_name}_{current_time}.png"
+        image = driver.save_screenshot(os.path.join(path, filename))

@@ -4,13 +4,13 @@ from selenium.webdriver.edge.options import Options as EdgeOptions
 
 
 class Config:
-    BASE_URL: str = "https://lambdatest.github.io/sample-todo-app/"
-    DONE: str = "done-true"
-    UNDONE: str = "done-false"
-    MAPPED: Dict[str, str] = {"done-true": "Marked", "done-false": "Not marked"}
+    BASE_URL: str = "https://mospolytech.ru//"
+    IMAGE_LOGS: str = "./logs/images/"
+    GROUPS: str = "221-323"
 
     @staticmethod
     def get_option() -> EdgeOptions:
         options = EdgeOptions()
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        options.add_argument("--start-maximized")
         return options
