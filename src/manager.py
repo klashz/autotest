@@ -16,49 +16,29 @@ class PageManager:
     def __init__(self) -> None:
         pass
 
-    def __open_list(self, driver: webdriver) -> None:
-        button = driver.find_element(By.XPATH, "//button[@class='hamburger']")
+    def open_catalog(self, driver: webdriver) -> str:
+        button = driver.find_element(By.XPATH, "//span[text()='Каталог']/..")
         button.click()
-    
-    def __open_study(self, driver: webdriver) -> None:
-        button = driver.find_element(By.XPATH, "//a[text()='Обучающимся']")
-        wait = WebDriverWait(driver, timeout=10)
-        wait.until(lambda _: button.is_displayed())
-        webdriver.ActionChains(driver).move_to_element(button).perform()
-    
-    def __open_schedule(self, driver: webdriver) -> None:
-        button = driver.find_element(By.XPATH, "//a[text()='Расписания']")
-        wait = WebDriverWait(driver, timeout=10)
-        wait.until(lambda _: button.is_displayed())
-        button.click()
+        return button.text
 
-    def schedule(self, driver: webdriver) -> None:
-        self.__open_list(driver)
-        self.__open_study(driver)
-        self.__open_schedule(driver)
+    def select_category(self, driver: webdriver) -> str:
+        element = By.XPATH, "//span[text()='Все для гейминга']"
+        wait = WebDriverWait(driver, 5)
+        wait.until(EC.presence_of_element_located(element))
+        category = driver.find_element(element[0], element[1] + "/..")
+        webdriver.ActionChains(driver).move_to_element(category).perform()
         return driver.current_url
 
-    def watch_on_site_schedule(self, driver: webdriver) -> str:
-        span = driver.find_element(By.XPATH, "//span[text()='Смотрите на сайте']")
-        webdriver.ActionChains(driver).scroll_to_element(span).perform()
-        button = span.find_element(By.XPATH, "./..")
-        button.click()
-        driver.switch_to.window(driver.window_handles[1])
-        return driver.current_url
+    def select_xbox(self, driver: webdriver) -> str:
+        element = By.XPATH, "//a[text()='Xbox']"
+        wait = WebDriverWait(driver, 5)
+        wait.until(EC.presence_of_element_located(element))
+        xbox = driver.find_element(*element)
+        return xbox.text
     
-    def set_groups(self, driver: webdriver, groups: str = Config.GROUPS) -> None:
-        entry = driver.find_element(By.XPATH, "//input[@class='groups']")
-        entry.send_keys(groups)
-        return groups
-    
-    def click_to_groups(self, driver: webdriver):
-        wait = WebDriverWait(driver, timeout=10)
-        wait.until(EC.presence_of_element_located((By.XPATH, "//div[text()='221-323']")))
-        group = driver.find_element(By.XPATH, "//div[text()='221-323']")
-        group.click()
-        return group.get_attribute("id")
-    
-    def screenshot(self, driver: webdriver, test_name: str, path: Optional[str] = Config.IMAGE_LOGS) -> None:
-        current_time = dt.now().strftime('%Y_%m_%d_%H_%M_%S')
-        filename = f"num_test_{test_name}_{current_time}.png"
-        image = driver.save_screenshot(os.path.join(path, filename))
+    def select_subcategory(self, driver: webdriver) -> str:
+        element = By.XPATH, "//a[text()='Xbox']"
+        item: WebElement = driver.find_element(element[0], element[1] + "//parent::div//parent::div//parent::div//child::ul//child::a")
+        text = item.text
+        item.click()
+        return text

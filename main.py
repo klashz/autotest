@@ -18,52 +18,65 @@ class TestPage:
         self.driver = GetSeleniumEdge()
         self.driver.get(Config.BASE_URL)
     
-    def open_schedule(self):
-        return self.manager.schedule(self.driver)
-
-    def open_search_schedule(self):
-        return self.manager.watch_on_site_schedule(self.driver)
-
-    def set_group(self):
-        return self.manager.set_groups(self.driver)
+    def __call__(self):
+        result_catalog = self.manager.open_catalog(self.driver)
+        print(result_catalog)
+        result_category = self.manager.select_category(self.driver)
+        print(result_category)
+        result_xbox = self.manager.select_xbox(self.driver)
+        print(result_xbox)
+        result_subcategory = self.manager.select_subcategory(self.driver)
+        print(result_subcategory)
+        
     
-    def click_to_groups(self):
-        return self.manager.click_to_groups(self.driver)
+    # def open_schedule(self):
+    #     return self.manager.schedule(self.driver)
+
+    # def open_search_schedule(self):
+    #     return self.manager.watch_on_site_schedule(self.driver)
+
+    # def set_group(self):
+    #     return self.manager.set_groups(self.driver)
     
-    def screenshot(self, num_test: str):
-        self.manager.screenshot(self.driver, num_test)
+    # def click_to_groups(self):
+    #     return self.manager.click_to_groups(self.driver)
+    
+    # def screenshot(self, num_test: str):
+    #     self.manager.screenshot(self.driver, num_test)
+
+pg = TestPage()
+pg()
+
+# class TestCase(unittest.TestCase):
+#     @classmethod
+#     def setUpClass(cls):
+#         cls.pg = TestPage()
+
+#     def tearDown(self):
+#         test_name = self._testMethodName
+#         errors = self._outcome.errors
+#         for i, (test, exc_info) in enumerate(errors):
+#             if exc_info is not None:
+#                 print(f"Error in test: {test_name}")
+#                 print(f"Error details: {exc_info[1]}")
+#                 self.pg.screenshot(test_name)
+
+    # def test_1(self):
+    #     result = self.pg.open_schedule()
+    #     self.assertEqual(result, "https://mospolytech.ru/obuchauschimsya/raspisaniya/")
+
+    # def test_2(self):
+    #     result = self.pg.open_search_schedule()
+    #     self.assertEqual(result, "https://rasp.dmami.ru/")
+
+    # def test_3(self):
+    #     result = self.pg.set_group()
+    #     self.assertEqual(result, "221-323")
+
+    # def test_4(self):
+    #     result = self.pg.click_to_groups()
+    #     self.assertEqual(result, "221-323")
 
 
-class TestCase(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.pg = TestPage()
-
-    def tearDown(self):
-        test_name = self._testMethodName
-        errors = self._outcome.errors
-        for i, (test, exc_info) in enumerate(errors):
-            if exc_info is not None:
-                print(f"Error in test: {test_name}")
-                print(f"Error details: {exc_info[1]}")
-                self.pg.screenshot(test_name)
-
-    def test_1(self):
-        result = self.pg.open_schedule()
-        self.assertEqual(result, "https://mospolytech.ru/obuchauschimsya/raspisaniya/")
-
-    def test_2(self):
-        result = self.pg.open_search_schedule()
-        self.assertEqual(result, "https://rasp.dmami.ru/")
-
-    def test_3(self):
-        result = self.pg.set_group()
-        self.assertEqual(result, "221-323")
-
-    def test_4(self):
-        result = self.pg.click_to_groups()
-        self.assertEqual(result, "221-323")
-
-
-if __name__ == '__main__':
-    unittest.main(warnings='ignore')
+# if __name__ == '__main__':
+    # unittest.main(warnings='ignore')
