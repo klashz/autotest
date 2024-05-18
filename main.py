@@ -12,37 +12,40 @@ from src import (
 )
 
 
-class TestPage:
+class TestPage(PageManager):
     def __init__(self) -> None:
-        self.manager = PageManager()
         self.driver = GetSeleniumEdge()
         self.driver.get(Config.BASE_URL)
     
     def __call__(self):
-        result_catalog = self.manager.open_catalog(self.driver)
+        # time.sleep(10)
+        result_catalog = self.open_catalog()
         print(result_catalog)
-        result_category = self.manager.select_category(self.driver)
+        time.sleep(3)
+
+        result_category = self.select_category()
         print(result_category)
-        result_xbox = self.manager.select_xbox(self.driver)
+        result_xbox = self.select_xbox()
         print(result_xbox)
-        result_subcategory = self.manager.select_subcategory(self.driver)
+        result_subcategory = self.select_subcategory()
         print(result_subcategory)
-        
+        result_list = self.select_list()
+        print(result_list)   
     
     # def open_schedule(self):
-    #     return self.manager.schedule(self.driver)
+    #     return self.self.schedule(self.driver)
 
     # def open_search_schedule(self):
-    #     return self.manager.watch_on_site_schedule(self.driver)
+    #     return self.self.watch_on_site_schedule(self.driver)
 
     # def set_group(self):
-    #     return self.manager.set_groups(self.driver)
+    #     return self.self.set_groups(self.driver)
     
     # def click_to_groups(self):
-    #     return self.manager.click_to_groups(self.driver)
+    #     return self.self.click_to_groups(self.driver)
     
     # def screenshot(self, num_test: str):
-    #     self.manager.screenshot(self.driver, num_test)
+    #     self.self.screenshot(self.driver, num_test)
 
 pg = TestPage()
 pg()
