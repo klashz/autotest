@@ -12,26 +12,25 @@ from src import (
 )
 
 
-class TestPage:
+class TestPage(PageManager):
     def __init__(self) -> None:
-        self.manager = PageManager()
         self.driver = GetSeleniumEdge()
         self.driver.get(Config.BASE_URL)
     
     def open_schedule(self):
-        return self.manager.schedule(self.driver)
+        return self.schedule(self.driver)
 
     def open_search_schedule(self):
-        return self.manager.watch_on_site_schedule(self.driver)
+        return self.watch_on_site_schedule(self.driver)
 
     def set_group(self):
-        return self.manager.set_groups(self.driver)
+        return self.set_groups(self.driver)
     
-    def click_to_groups(self):
-        return self.manager.click_to_groups(self.driver)
+    def click_to_group(self):
+        return self.click_to_groups(self.driver)
     
     def screenshot(self, num_test: str):
-        self.manager.screenshot(self.driver, num_test)
+        self.screenshots(self.driver, num_test)
 
 
 class TestCase(unittest.TestCase):
@@ -61,7 +60,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(result, "221-323")
 
     def test_4(self):
-        result = self.pg.click_to_groups()
+        result = self.pg.click_to_group()
         self.assertEqual(result, "221-323")
 
 

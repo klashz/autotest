@@ -12,6 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from .base import Config
 
 
+# base class for Page Object
 class PageManager:
     def __init__(self) -> None:
         pass
@@ -58,7 +59,7 @@ class PageManager:
         group.click()
         return group.get_attribute("id")
     
-    def screenshot(self, driver: webdriver, test_name: str, path: Optional[str] = Config.IMAGE_LOGS) -> None:
+    def screenshots(self, driver: webdriver, test_name: str, path: Optional[str] = Config.IMAGE_LOGS) -> None:
         current_time = dt.now().strftime('%Y_%m_%d_%H_%M_%S')
         filename = f"num_test_{test_name}_{current_time}.png"
         image = driver.save_screenshot(os.path.join(path, filename))
