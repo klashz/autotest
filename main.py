@@ -1,5 +1,4 @@
 import time
-from collections import Counter
 
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.by import By
@@ -17,69 +16,90 @@ class TestPage(PageManager):
         self.driver = GetSeleniumEdge()
         self.driver.get(Config.BASE_URL)
     
-    def __call__(self):
-        # time.sleep(10)
+    def open_cat(self):
         result_catalog = self.open_catalog()
-        print(result_catalog)
         time.sleep(3)
+        return result_catalog
 
+    def sel_cat(self):
         result_category = self.select_category()
-        print(result_category)
+        return result_category
+    
+    def sel_xbox(self):
         result_xbox = self.select_xbox()
-        print(result_xbox)
+        return result_xbox
+    
+    def sel_subcat(self):
         result_subcategory = self.select_subcategory()
-        print(result_subcategory)
-        result_list = self.select_list()
-        print(result_list)   
+        return result_subcategory
     
-    # def open_schedule(self):
-    #     return self.self.schedule(self.driver)
+    def sel_list_and_like(self):
+        likes_list, count_blocks = self.select_list()
+        result_add = self.select_like(likes_list)
+        return result_add
 
-    # def open_search_schedule(self):
-    #     return self.self.watch_on_site_schedule(self.driver)
-
-    # def set_group(self):
-    #     return self.self.set_groups(self.driver)
+    def sel_favorite(self):
+        result_add_favorite = self.select_favorite()
+        return result_add_favorite
     
-    # def click_to_groups(self):
-    #     return self.self.click_to_groups(self.driver)
+    def del_favorite(self):
+        result_del_favorite = self.delete_favorite()
+        return result_del_favorite
     
-    # def screenshot(self, num_test: str):
-    #     self.self.screenshot(self.driver, num_test)
+    def ref_page(self):
+        result_refresh_page = self.refresh_page()
+        return result_refresh_page
+    
+    def screenshot(self, name):
+        self.screenshots(name)
+    
 
-pg = TestPage()
-pg()
+class TestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.pg = TestPage()
 
-# class TestCase(unittest.TestCase):
-#     @classmethod
-#     def setUpClass(cls):
-#         cls.pg = TestPage()
+    def tearDown(self):
+        test_name = self._testMethodName
+        errors = self._outcome.errors
+        for i, (test, exc_info) in enumerate(errors):
+            if exc_info is not None:
+                print(f"Error in test: {test_name}")
+                print(f"Error details: {exc_info[1]}")
+                self.pg.screenshot(test_name)
 
-#     def tearDown(self):
-#         test_name = self._testMethodName
-#         errors = self._outcome.errors
-#         for i, (test, exc_info) in enumerate(errors):
-#             if exc_info is not None:
-#                 print(f"Error in test: {test_name}")
-#                 print(f"Error details: {exc_info[1]}")
-#                 self.pg.screenshot(test_name)
+    def test_1(self):
+        result = self.pg.open_cat()
+        self.assertEqual(result, "Каталог")
 
-    # def test_1(self):
-    #     result = self.pg.open_schedule()
-    #     self.assertEqual(result, "https://mospolytech.ru/obuchauschimsya/raspisaniya/")
+    def test_2(self):
+        result = self.pg.sel_cat()
+        self.assertEqual(result, "https://market.yandex.ru/")
 
-    # def test_2(self):
-    #     result = self.pg.open_search_schedule()
-    #     self.assertEqual(result, "https://rasp.dmami.ru/")
+    def test_3(self):
+        result = self.pg.sel_xbox()
+        self.assertEqual(result, "Xbox")
 
-    # def test_3(self):
-    #     result = self.pg.set_group()
-    #     self.assertEqual(result, "221-323")
+    def test_4(self):
+        result = self.pg.sel_subcat()
+        self.assertEqual(result, "Игровые приставки")
 
-    # def test_4(self):
-    #     result = self.pg.click_to_groups()
-    #     self.assertEqual(result, "221-323")
+    def test_5(self):
+        result = self.pg.sel_list_and_like()
+        self.assertEqual(result, "Удалить из избранного")
+    
+    def test_6(self):
+        result = self.pg.sel_favorite()
+        self.assertEqual(result, "https://market.yandex.ru/my/wishlist?track=head")
+
+    def test_7(self):
+        result = self.pg.del_favorite()
+        self.assertEqual(result, "Добавить в избранное")
+    
+    def test_8(self):
+        result = self.pg.ref_page()
+        self.assertEqual(result, "Войдите в аккаунт")
 
 
-# if __name__ == '__main__':
-    # unittest.main(warnings='ignore')
+if __name__ == '__main__':
+    unittest.main(warnings='ignore')
