@@ -12,9 +12,8 @@ from src import (
 )
 
 
-class TestPage:
+class TestPage(PageManager):
     def __init__(self) -> None:
-        self.manager = PageManager()
         self.driver = GetSeleniumEdge()
         self.driver.get(Config.BASE_URL)
     
@@ -23,33 +22,35 @@ class TestPage:
         return text
     
     def status_first_task(self):
-        return self.manager.get_status_tasks(self.driver)[0]
+        return self.get_status_tasks(self.driver)[0]
 
     def click_by_tasks(self):
-        status_tasks = self.manager.get_status_tasks(self.driver)
-        print("Status of task list before click:", self.manager.mapper(status_tasks))
+        status_tasks = self.get_status_tasks(self.driver)
+        print("Status of task list before click:", self.mapper(status_tasks))
 
-        tasks = self.manager.get_tasks(self.driver)
+        tasks = self.get_tasks(self.driver)
         for i in range(len(status_tasks)):
             tasks[i].click()
             time.sleep(1)
 
-            temp_status_tasks = self.manager.get_status_tasks(self.driver)
-            print("Status of task list after click:", self.manager.mapper(temp_status_tasks))
+            temp_status_tasks = self.get_status_tasks(self.driver)
+            print("Status of task list after click:", self.mapper(temp_status_tasks))
 
-        return self.manager.get_text_task(self.driver)[-1]
+        return self.get_text_task(self.driver)[-1]
 
     def create_new_task(self):
-        self.manager.create_task(self.driver, "Сделать первую лабу")
+        self.create_task(self.driver, "Сделать первую лабу")
         time.sleep(1)
-        tasks = self.manager.get_tasks(self.driver)
-        status_tasks = self.manager.get_status_tasks(self.driver)
-        print("Status of task list with new task before click:", self.manager.mapper(status_tasks))
+        tasks = self.get_tasks(self.driver)
+        status_tasks = self.get_status_tasks(self.driver)
+        print("Status of task list with new task before click:", self.mapper(status_tasks))
         tasks[-1].click()
-        return self.manager.get_text_task(self.driver)[-1]
+        status_tasks = self.get_status_tasks(self.driver)
+        print("Status of task list with new task after click:", self.mapper(status_tasks))
+        return self.get_text_task(self.driver)[-1]
     
     def checking_count(self):
-        return len(self.manager.get_tasks(self.driver))
+        return len(self.get_tasks(self.driver))
     
 
 class TestCase(unittest.TestCase):
