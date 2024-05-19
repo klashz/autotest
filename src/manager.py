@@ -11,7 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from .base import Config
 
-
+#TODO: change get elements by attribute
 class PageManager:
     def __init__(self) -> None:
         pass

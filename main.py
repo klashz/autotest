@@ -53,7 +53,7 @@ class TestPage(PageManager):
     def screenshot(self, name):
         self.screenshots(name)
     
-
+#TODO: add test for check display windows
 class TestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
