@@ -42,6 +42,9 @@ class TestPage(PageManager):
         result_add_favorite = self.select_favorite()
         return result_add_favorite
     
+    def displayed_windows(self):
+        return self.check_notifications()
+    
     def del_favorite(self):
         result_del_favorite = self.delete_favorite()
         return result_del_favorite
@@ -68,35 +71,43 @@ class TestCase(unittest.TestCase):
                 print(f"Error details: {exc_info[1]}")
                 self.pg.screenshot(test_name)
 
-    def test_1(self):
+    def test_0(self):
         result = self.pg.open_cat()
         self.assertEqual(result, "Каталог")
 
-    def test_2(self):
+    def test_1(self):
         result = self.pg.sel_cat()
         self.assertEqual(result, "https://market.yandex.ru/")
 
-    def test_3(self):
+    def test_2(self):
         result = self.pg.sel_xbox()
         self.assertEqual(result, "Xbox")
 
-    def test_4(self):
+    def test_3(self):
         result = self.pg.sel_subcat()
         self.assertEqual(result, "Игровые приставки")
 
-    def test_5(self):
+    def test_4(self):
         result = self.pg.sel_list_and_like()
         self.assertEqual(result, "Удалить из избранного")
     
-    def test_6(self):
+    def test_5(self):
         result = self.pg.sel_favorite()
         self.assertEqual(result, "https://market.yandex.ru/my/wishlist?track=head")
+    
+    def test_6(self):
+        result = self.pg.displayed_windows() 
+        self.assertEqual(result, True)
 
     def test_7(self):
         result = self.pg.del_favorite()
         self.assertEqual(result, "Добавить в избранное")
     
     def test_8(self):
+        result = self.pg.displayed_windows() 
+        self.assertEqual(result, True)
+    
+    def test_9(self):
         result = self.pg.ref_page()
         self.assertEqual(result, "Войдите в аккаунт")
 

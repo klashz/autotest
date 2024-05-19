@@ -23,15 +23,17 @@ class PageManager:
 
     def select_category(self) -> str:
         element = By.XPATH, "//span[text()='Все для гейминга']"
-        wait = WebDriverWait(self.driver, 5)
+        wait = WebDriverWait(self.driver, 10)
         wait.until(EC.presence_of_element_located(element))
         category = self.driver.find_element(element[0], element[1] + "/..")
         webdriver.ActionChains(self.driver).move_to_element(category).perform()
+        time.sleep(2)
+        print('HERE')
         return self.driver.current_url
 
     def select_xbox(self) -> str:
         element = By.XPATH, "//a[text()='Xbox']"
-        wait = WebDriverWait(self.driver, 5)
+        wait = WebDriverWait(self.driver, 10)
         wait.until(EC.presence_of_element_located(element))
         xbox = self.driver.find_element(*element)
         return xbox.text
@@ -44,16 +46,16 @@ class PageManager:
         return text
 
     def select_list(self, size: int = 5):
-        element = By.XPATH, "//div[@class='kYYKD _3EmFM']"
-        wait = WebDriverWait(self.driver, 10)
-        wait.until(EC.presence_of_element_located(element))
-        all_results_search = self.driver.find_element(*element)
-        blocks = all_results_search.find_elements(By.XPATH, "//div[@class='_1ENFO']")
-        likes = all_results_search.find_elements(By.XPATH, "//button[@class='_2VECW' and @title='Добавить в избранное']")
-        texts = all_results_search.find_elements(By.XPATH, "//h3[@role='link']")
-        prices = all_results_search.find_elements(By.XPATH, "//span[@class='_1ArMm']")
+        # element = By.XPATH, "//div[text()='Удалить из избранного']"
+        # wait = WebDriverWait(self.driver, 10)
+        # wait.until(EC.presence_of_element_located(element))
+        # all_results_search = self.driver.find_element(*element)
+        blocks = self.driver.find_elements(By.XPATH, "//div[@*='productSnippet']")
+        likes = self.driver.find_elements(By.XPATH, "//button[@title='Добавить в избранное']")
+        texts = self.driver.find_elements(By.XPATH, "//h3[@role='link']")
+        prices = self.driver.find_elements(By.XPATH, "//span[@*='snippet-price-current']")
         total = abs(len(blocks) - len(likes))
-        
+        print(total, len(blocks), len(likes))
         c = 1
         for text, price in list(zip(texts, prices))[total:size + total]:
             print(f'Название товара: "{text.text}"  Цена товара: {price.text}')
@@ -73,6 +75,7 @@ class PageManager:
         return self.driver.current_url
     
     def delete_favorite(self) -> str:
+        time.sleep(1)
         self.driver.find_element(By.XPATH, "//button[@title='Удалить из избранного']").click()
         time.sleep(5)
         return self.driver.find_element(By.XPATH, "//button[@title='Добавить в избранное']").get_attribute("title")
@@ -86,7 +89,16 @@ class PageManager:
         results = self.driver.find_element(*element)
         
         return results.text
-    
+
+    def check_notifications(self) -> bool:
+        element = By.XPATH, "//div[@data-auto='notification']"
+        wait = WebDriverWait(self.driver, 4)
+        try:
+            wait.until(EC.presence_of_element_located(element))
+            return True
+        except:
+            return False
+        
     def screenshots(self, test_name: str, path: Optional[str] = Config.IMAGE_LOGS) -> None:
         current_time = dt.now().strftime('%Y_%m_%d_%H_%M_%S')
         filename = f"num_test_{test_name}_{current_time}.png"
