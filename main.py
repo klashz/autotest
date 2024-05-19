@@ -1,5 +1,4 @@
-import time
-from collections import Counter
+from datetime import datetime as dt
 
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.by import By
@@ -18,19 +17,22 @@ class TestPage(PageManager):
         self.driver.get(Config.BASE_URL)
     
     def open_schedule(self):
-        return self.schedule(self.driver)
+        return self.schedule()
 
     def open_search_schedule(self):
-        return self.watch_on_site_schedule(self.driver)
+        return self.watch_on_site_schedule()
 
     def set_group(self):
-        return self.set_groups(self.driver)
+        return self.set_groups()
     
     def click_to_group(self):
-        return self.click_to_groups(self.driver)
+        return self.click_to_groups()
+
+    def get_green_day(self):
+        return self.current_day()
     
     def screenshot(self, num_test: str):
-        self.screenshots(self.driver, num_test)
+        self.screenshots(num_test)
 
 
 class TestCase(unittest.TestCase):
@@ -62,6 +64,15 @@ class TestCase(unittest.TestCase):
     def test_4(self):
         result = self.pg.click_to_group()
         self.assertEqual(result, "221-323")
+    
+    def test_5(self):
+        days = ["понедельник", "вторник", "среда", "четверг", "пятница", "суббота"]
+        cur_day = dt.today().weekday()
+        result = self.pg.get_green_day()
+        if cur_day == 6:
+            self.assertEqual(result, None)
+        else:
+            self.assertEqual(result, days[cur_day])
 
 
 if __name__ == '__main__':
