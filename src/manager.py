@@ -66,7 +66,7 @@ class PageManager:
         title = self.driver.find_element(By.CLASS_NAME, "schedule-day_today") \
                            .find_element(By.CLASS_NAME, "schedule-day__title")
 
-        return title
+        return title.text.lower().strip()
     
     def screenshots(self, test_name: str, path: Optional[str] = Config.IMAGE_LOGS) -> None:
         current_time = dt.now().strftime('%Y_%m_%d_%H_%M_%S')
